@@ -4,7 +4,8 @@ import gdown
 import gradio as gr
 import numpy as np
 import torch
-from data_loader_cache import im_preprocess, im_reader, normalize
+from data_loader_cache import im_preprocess, im_reader
+from torchvision.transforms.functional import normalize
 from models import ISNetDIS
 from PIL import Image
 from torch import nn
