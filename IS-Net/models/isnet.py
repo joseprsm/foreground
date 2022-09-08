@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-from torch.nn.functional import interpolate, log_softmax, sigmoid, softmax, upsample
+from torch.nn.functional import interpolate, log_softmax, softmax
 
-bce_loss = nn.BCELoss(size_average=True)
+bce_loss = nn.BCELoss()
 
 
 def muti_loss_fusion(preds, target):
@@ -22,10 +22,10 @@ def muti_loss_fusion(preds, target):
     return loss0, loss
 
 
-fea_loss = nn.MSELoss(size_average=True)
-kl_loss = nn.KLDivLoss(size_average=True)
-l1_loss = nn.L1Loss(size_average=True)
-smooth_l1_loss = nn.SmoothL1Loss(size_average=True)
+fea_loss = nn.MSELoss()
+kl_loss = nn.KLDivLoss()
+l1_loss = nn.L1Loss()
+smooth_l1_loss = nn.SmoothL1Loss()
 
 
 def muti_loss_fusion_kl(preds, target, dfs, fs, mode="MSE"):
@@ -79,7 +79,7 @@ class REBNCONV(nn.Module):
 # upsample tensor 'src' to have the same spatial size with tensor 'tar'
 def _upsample_like(src, tar):
 
-    src = upsample(src, size=tar.shape[2:], mode="bilinear")
+    src = interpolate(src, size=tar.shape[2:], mode="bilinear")
 
     return src
 
@@ -483,12 +483,12 @@ class ISNetGTEncoder(nn.Module):
         d6 = _upsample_like(d6, x)
 
         return [
-            sigmoid(d1),
-            sigmoid(d2),
-            sigmoid(d3),
-            sigmoid(d4),
-            sigmoid(d5),
-            sigmoid(d6),
+            torch.sigmoid(d1),
+            torch.sigmoid(d2),
+            torch.sigmoid(d3),
+            torch.sigmoid(d4),
+            torch.sigmoid(d5),
+            torch.sigmoid(d6),
         ], [hx1, hx2, hx3, hx4, hx5, hx6]
 
 
@@ -606,10 +606,10 @@ class ISNetDIS(nn.Module):
         d6 = _upsample_like(d6, x)
 
         return [
-            sigmoid(d1),
-            sigmoid(d2),
-            sigmoid(d3),
-            sigmoid(d4),
-            sigmoid(d5),
-            sigmoid(d6),
+            torch.sigmoid(d1),
+            torch.sigmoid(d2),
+            torch.sigmoid(d3),
+            torch.sigmoid(d4),
+            torch.sigmoid(d5),
+            torch.sigmoid(d6),
         ], [hx1d, hx2d, hx3d, hx4d, hx5d, hx6]

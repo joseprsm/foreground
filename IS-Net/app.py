@@ -9,7 +9,7 @@ from models import ISNetDIS
 from PIL import Image
 from torch import nn
 from torch.autograd import Variable
-from torch.nn.functional import upsample
+from torch.nn.functional import interpolate
 from torchvision import transforms
 
 device_ = "cuda" if torch.cuda.is_available() else "cpu"
@@ -94,7 +94,7 @@ def predict(net, inputs_val, shapes_val, hypar, device):
 
     # recover the prediction spatial size to the orignal image size
     pred_val = torch.squeeze(
-        upsample(
+        interpolate(
             torch.unsqueeze(pred_val, 0),
             (shapes_val[0][0], shapes_val[0][1]),
             mode="bilinear",

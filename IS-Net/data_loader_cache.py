@@ -9,7 +9,7 @@ from glob import glob
 import numpy as np
 import torch
 from skimage import io
-from torch.nn.functional import upsample
+from torch.nn.functional import interpolate
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from torchvision.transforms.functional import normalize
@@ -176,7 +176,7 @@ def im_preprocess(im, size):
         return im_tensor, im.shape[0:2]
     else:
         im_tensor = torch.unsqueeze(im_tensor, 0)
-        im_tensor = upsample(im_tensor, size, mode="bilinear")
+        im_tensor = interpolate(im_tensor, size, mode="bilinear")
         im_tensor = torch.squeeze(im_tensor, 0)
 
     return im_tensor.type(torch.uint8), im.shape[0:2]
@@ -192,7 +192,7 @@ def gt_preprocess(gt, size):
         return gt_tensor.type(torch.uint8), gt.shape[0:2]
     else:
         gt_tensor = torch.unsqueeze(torch.tensor(gt_tensor, dtype=torch.float32), 0)
-        gt_tensor = upsample(gt_tensor, size, mode="bilinear")
+        gt_tensor = interpolate(gt_tensor, size, mode="bilinear")
         gt_tensor = torch.squeeze(gt_tensor, 0)
 
     return gt_tensor.type(torch.uint8), gt.shape[0:2]
@@ -235,10 +235,10 @@ class GOSResize(object):
         # start = time.time()
 
         image = torch.squeeze(
-            upsample(torch.unsqueeze(image, 0), self.size, mode="bilinear"), dim=0
+            interpolate(torch.unsqueeze(image, 0), self.size, mode="bilinear"), dim=0
         )
         label = torch.squeeze(
-            upsample(torch.unsqueeze(label, 0), self.size, mode="bilinear"), dim=0
+            interpolate(torch.unsqueeze(label, 0), self.size, mode="bilinear"), dim=0
         )
 
         # print("time for resize: ", time.time()-start)
