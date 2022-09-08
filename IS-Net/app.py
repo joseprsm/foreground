@@ -1,17 +1,18 @@
 import os
+
+import gdown
 import gradio as gr
-from PIL import Image
 import numpy as np
 import torch
-from torch.autograd import Variable
-from torchvision import transforms
-import torch.nn.functional as F
-import gdown
-
-from data_loader_cache import normalize, im_reader, im_preprocess
+from data_loader_cache import im_preprocess, im_reader, normalize
 from models import ISNetDIS
+from PIL import Image
+from torch import nn
+from torch.autograd import Variable
+from torch.nn.functional import upsample
+from torchvision import transforms
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device_ = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Download official weights
 if not os.path.exists("saved_models"):
@@ -25,9 +26,9 @@ class GOSNormalize(object):
     Normalize the Image using torch.transforms
     """
 
-    def __init__(self, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
-        self.mean = mean
-        self.std = std
+    def __init__(self, mean=None, std=None):
+        self.mean = mean or [0.485, 0.456, 0.406]
+        self.std = std or [0.229, 0.224, 0.225]
 
     def __call__(self, image):
         image = normalize(image, self.mean, self.std)
@@ -91,9 +92,9 @@ def predict(net, inputs_val, shapes_val, hypar, device):
         0, :, :, :
     ]  # B x 1 x H x W    # we want the first one which is the most accurate prediction
 
-    ## recover the prediction spatial size to the orignal image size
+    # recover the prediction spatial size to the orignal image size
     pred_val = torch.squeeze(
-        F.upsample(
+        upsample(
             torch.unsqueeze(pred_val, 0),
             (shapes_val[0][0], shapes_val[0][1]),
             mode="bilinear",
@@ -112,42 +113,37 @@ def predict(net, inputs_val, shapes_val, hypar, device):
 
 
 # Set Parameters
-hypar = {}  # paramters for inferencing
+hypar_ = {}  # paramters for inferencing
 
-hypar["model_path"] = "./saved_models"  ## load trained weights from this path
-hypar["restore_model"] = "isnet.pth"  ## name of the to-be-loaded weights
-hypar["interm_sup"] = False  ## indicate if activate intermediate feature supervision
+hypar_["model_path"] = "./saved_models"  # load trained weights from this path
+hypar_["restore_model"] = "isnet.pth"  # name of the to-be-loaded weights
+hypar_["interm_sup"] = False  # indicate if activate intermediate feature supervision
 
-##  choose floating point accuracy --
-hypar["model_digit"] = "full"  ## indicates "half" or "full" accuracy of float number
-hypar["seed"] = 0
+#  choose floating point accuracy
+hypar_["model_digit"] = "full"  # indicates "half" or "full" accuracy of float number
+hypar_["seed"] = 0
 
-hypar["cache_size"] = [
-    1024,
-    1024,
-]  ## cached input spatial resolution, can be configured into different size
+# cached input spatial resolution, can be configured into different size
+hypar_["cache_size"] = [1024, 1024]
 
-## data augmentation parameters ---
-hypar["input_size"] = [
-    1024,
-    1024,
-]  ## mdoel input spatial size, usually use the same value hypar["cache_size"], which means we don't further resize the images
-hypar["crop_size"] = [
-    1024,
-    1024,
-]  ## random crop size from the input, it is usually set as smaller than hypar["cache_size"], e.g., [920,920] for data augmentation
+# data augmentation parameters ---
+# model input spatial size, usually use the same value hypar["cache_size"], which means we don't further resize the images
+hypar_["input_size"] = [1024, 1024]
 
-hypar["model"] = ISNetDIS()
+# random crop size from the input, it is usually set as smaller than hypar["cache_size"], e.g., [920,920] for data augmentation
+hypar_["crop_size"] = [1024, 1024]
+
+hypar_["model"] = ISNetDIS()
 
 # Build Model
-net = build_model(hypar, device)
+net_ = build_model(hypar_, device_)
 
 
 def inference(image: Image):
     image_path = image
 
-    image_tensor, orig_size = load_image(image_path, hypar)
-    mask = predict(net, image_tensor, orig_size, hypar, device)
+    image_tensor, orig_size = load_image(image_path, hypar_)
+    mask = predict(net_, image_tensor, orig_size, hypar_, device_)
 
     pil_mask = Image.fromarray(mask).convert("L")
     im_rgb = Image.open(image).convert("RGB")

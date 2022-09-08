@@ -1,1 +1,1 @@
-from models.isnet import ISNetGTEncoder, ISNetDIS
+from .isnet import ISNetDIS, ISNetGTEncoder
