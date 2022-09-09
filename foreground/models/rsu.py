@@ -2,16 +2,9 @@ from abc import abstractmethod
 
 import torch
 from torch import nn
-from torch.nn.functional import interpolate
 
 from foreground.models.rebnconv import REBNCONV
-
-
-def _upsample_like(src, tar):
-
-    src = interpolate(src, size=tar.shape[2:], mode="bilinear")
-
-    return src
+from foreground.models.utils import upsample_like
 
 
 class _BaseRSU(nn.Module):
@@ -91,13 +84,13 @@ class RSU7(_BaseRSU):
         hx5 = self.rebnconv5(hx4)
 
         hx4d = self.rebnconv4d(torch.cat((hx5, hx4), 1))
-        hx4dup = _upsample_like(hx4d, hx3)
+        hx4dup = upsample_like(hx4d, hx3)
 
         hx3d = self.rebnconv3d(torch.cat((hx4dup, hx3), 1))
-        hx3dup = _upsample_like(hx3d, hx2)
+        hx3dup = upsample_like(hx3d, hx2)
 
         hx2d = self.rebnconv2d(torch.cat((hx3dup, hx2), 1))
-        hx2dup = _upsample_like(hx2d, hx1)
+        hx2dup = upsample_like(hx2d, hx1)
 
         hx1d = self.rebnconv1d(torch.cat((hx2dup, hx1), 1))
 
@@ -130,16 +123,16 @@ class RSU6(_BaseRSU):
         hx6 = self.rebnconv6(hx5)
 
         hx5d = self.rebnconv5d(torch.cat((hx6, hx5), 1))
-        hx5dup = _upsample_like(hx5d, hx4)
+        hx5dup = upsample_like(hx5d, hx4)
 
         hx4d = self.rebnconv4d(torch.cat((hx5dup, hx4), 1))
-        hx4dup = _upsample_like(hx4d, hx3)
+        hx4dup = upsample_like(hx4d, hx3)
 
         hx3d = self.rebnconv3d(torch.cat((hx4dup, hx3), 1))
-        hx3dup = _upsample_like(hx3d, hx2)
+        hx3dup = upsample_like(hx3d, hx2)
 
         hx2d = self.rebnconv2d(torch.cat((hx3dup, hx2), 1))
-        hx2dup = _upsample_like(hx2d, hx1)
+        hx2dup = upsample_like(hx2d, hx1)
 
         hx1d = self.rebnconv1d(torch.cat((hx2dup, hx1), 1))
 
@@ -170,13 +163,13 @@ class RSU5(_BaseRSU):
         hx5 = self.rebnconv5(hx4)
 
         hx4d = self.rebnconv4d(torch.cat((hx5, hx4), 1))
-        hx4dup = _upsample_like(hx4d, hx3)
+        hx4dup = upsample_like(hx4d, hx3)
 
         hx3d = self.rebnconv3d(torch.cat((hx4dup, hx3), 1))
-        hx3dup = _upsample_like(hx3d, hx2)
+        hx3dup = upsample_like(hx3d, hx2)
 
         hx2d = self.rebnconv2d(torch.cat((hx3dup, hx2), 1))
-        hx2dup = _upsample_like(hx2d, hx1)
+        hx2dup = upsample_like(hx2d, hx1)
 
         hx1d = self.rebnconv1d(torch.cat((hx2dup, hx1), 1))
 
@@ -204,10 +197,10 @@ class RSU4(_BaseRSU):
         hx4 = self.rebnconv4(hx3)
 
         hx3d = self.rebnconv3d(torch.cat((hx4, hx3), 1))
-        hx3dup = _upsample_like(hx3d, hx2)
+        hx3dup = upsample_like(hx3d, hx2)
 
         hx2d = self.rebnconv2d(torch.cat((hx3dup, hx2), 1))
-        hx2dup = _upsample_like(hx2d, hx1)
+        hx2dup = upsample_like(hx2d, hx1)
 
         hx1d = self.rebnconv1d(torch.cat((hx2dup, hx1), 1))
 
