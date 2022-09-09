@@ -5,7 +5,7 @@ WORKDIR /usr/local/foreground
 COPY pyproject.toml .
 COPY foreground foreground
 
-RUN pip install numpy==1.23.1
+RUN pip install numpy==1.23.1 scikit-image>=0.15.0
 
 RUN pip install .
 
