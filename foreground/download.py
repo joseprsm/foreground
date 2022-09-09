@@ -11,5 +11,5 @@ def download_weights():
         gdown.download(MODEL_PATH_URL, "saved_models/isnet.pth", use_cookies=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     download_weights()
