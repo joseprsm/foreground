@@ -11,6 +11,4 @@ RUN pip install .
 
 RUN python foreground/download.py
 
-COPY foreground/app.py app.py
-
-ENTRYPOINT ["uvicorn", "app:app", "--reload"]
+ENTRYPOINT ["uvicorn", "foreground.app:app", "--reload", "--host", "0.0.0.0"]
