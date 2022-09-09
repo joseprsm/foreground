@@ -2,7 +2,7 @@ import os
 
 import gdown
 
-MODEL_PATH_URL = "https://drive.google.com/uc?id=1KyMpRjewZdyYfxHPYcd-ZbanIXtin0Sn"
+MODEL_PATH_URL = "https://drive.google.com/uc?id=1nV57qKuy--d5u1yvkng9aXW1KS4sOpOi"
 
 
 def download_weights():
