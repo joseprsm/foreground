@@ -87,8 +87,6 @@ def inference(image: Image):
 
     pil_mask = Image.fromarray(mask).convert("L")
     im_rgb = Image.open(image).convert("RGB")
+    im_rgb.putalpha(pil_mask)
 
-    im_rgba = im_rgb.copy()
-    im_rgba.putalpha(pil_mask)
-
-    return im_rgba
+    return im_rgb
